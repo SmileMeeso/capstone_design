@@ -151,6 +151,7 @@ bool readSwitch2 () {
 
 // 시트 여는 함수
 void openSheet () {
+  Serial.println("openSheet");
   // for문 쓰는건 부하방지를 위해
   for (int i = _servoAngle; i < 120 ; _servoAngle++) { // 뚜껑이 열린다
     servo.write(_servoAngle);
@@ -159,6 +160,7 @@ void openSheet () {
 }
 // 시트 닫는 함수
 void closeSheet () {
+  Serial.println("closeSheet");
   // for문 쓰는건 부하방지를 위해
   for (int i = _servoAngle; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
     servo.write(_servoAngle);
@@ -167,6 +169,7 @@ void closeSheet () {
 }
 // 뚜껑 여는 함수
 void openCover () {
+  Serial.println("openCover");
   // for문 쓰는건 부하방지를 위해
   for (int i = _servo2Angle; i < 120 ; _servoAngle++) { // 뚜껑이 열린다
     servo.write(_servo2Angle);
@@ -175,6 +178,7 @@ void openCover () {
 }
 // 뚜껑 닫는 함수
 void closeCover () {
+  Serial.println("closeCover");
   // for문 쓰는건 부하방지를 위해
   for (int i = _servo2Angle ; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
     servo.write(_servo2Angle);
@@ -183,11 +187,13 @@ void closeCover () {
 }
 void cleanCover () {
   // 아직 어떤식으로 움직여야할지, 어떤 부품을 쓰는지 파악이 안돼서 안짰다 ㅠ_ㅠ
+  Serial.println("cleanCover");
 }
 // 시트 상태 만드는 함수
 // true: 열림
 // false: 닫힘
 void setIsSheetOpen (bool status) {
+  Serial.println("setIsSheetOpen");
   _isSheetOpen = status;
 
   // 항상 상태를 보장하기 위해 커버의 동작은 이 함수 안에서 실행함
@@ -202,6 +208,7 @@ void setIsSheetOpen (bool status) {
 // true: 열림
 // false: 닫힘
 void setIsCoverOpen (bool status) {
+  Serial.println("setIsCoverOpen");
   _isCoverOpen = status;
 
   // 항상 상태를 보장하기 위해 커버의 동작은 이 함수 안에서 실행함
