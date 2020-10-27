@@ -42,11 +42,14 @@ int sw_up;            // 시트 올림을 위한 변수:SWUP
 int sw_dn;            // 시트 내림을 위한 변수:SWDN
 /* 영민님 변수 끝 */
 
-int _servoAngle = 0; // 서보모터 1 각도 
+int _servoAngle = 0; // 서보모터 1 각도 (시트 모터)
+int _servo2Angle = 0; // 서보모터 2 각도 (뚜껑 모터)
 
 int _personLeaveTime = 0; // 사람이 얼마나 감지되지 않았는지 저장하는 변수
 int _personLeaveTimeInt = 5; // 사람이 몇 초 감지되지 않았을 때 뚜깡이 닫힐지
-int _isCoverOpen = false; // 커버가 열려있는 상태인지
+
+bool _isCoverOpen = false; // 커버가 열려있는 상태인지
+bool _isSheetOpen = false; // 시트가 열려있는 상태인지 
 
 void setup() 
 {
@@ -78,56 +81,111 @@ void setup()
 void loop() 
 {
   int TCRT5000value = analogRead(TCRT5000); // 센서를 읽어서 value에 저장
-//  Serial.println("센서 값: ");
-//  Serial.println(TCRT5000value); // value값 출력 
 
-  if (TCRT5000value > 1000) { //인체 감지
+  // 적외선 센서에 인체가 감지되었는가?
+  // 인체가 계속 감지되는가?
+  if (TCRT5000value > 1000) { 
+    // 뚜껑을 연다
     _personLeaveTime = 0;
-    openCover ();
     setIsCoverOpen (true); // 커버 열린 상태로 초기화
+
+    if (readSwitch1 ()) { // 스위치 1이 on 상태이고
+      if (!readSwitch2 ()) { // 스위치 2가 off 상태이면
+        setIsSheetOpen (true); // 시트를 연다
+      }
+    }
+    else { // 스위치 1이 off 상태이면 
+      setIsSheetOpen (false);
+    }
   }
-  else { // 인체 비감지
+  // 인체 비감지
+  else { 
     _personLeaveTime ++;
     delay (1000);
   }
 
-  if (_personLeaveTime > _personLeaveTimeInt) {
-    _persionLeaveTime = 0;
-    closeCover ();
+  if (_personLeaveTime > _personLeaveTimeInt) { // 5초의 지연을 준다.
+    // 지연이 끝날 때까지 인체가 감지되지 않으면
+    _personLeaveTime = 0;
+
+    // 시트를 닫는다
+    setIsSheetOpen (false); // 시트 닫힌 상태로 초기화
+    setIsCoverOpen (false); // 뚜껑 닫힌 상태로 초기화
     cleanCover (); // 뚜껑이 닫히면 커버를 청소한다
-    setIsCoverOpen (false); // 커버 닫힌 상태로 초기화 
   }
   
   delay(100);
 }
-// 뚜껑 닫는 함수
-void closeCover () {
+// switch1 읽는 함수
+bool readSwitch1 () {
+  return true;
+}
+// switch2 읽는 함수
+bool readSwitch2 () {
+  return true;
+}
+
+// 시트 여는 함수
+void openSheet () {
+  // for문 쓰는건 부하방지를 위해
+  for (_servoAngle; i < 120 ; _servoAngle++) { // 뚜껑이 열린다
+    servo.write(_servoAngle);
+    delay(40);
+  }
+}
+// 시트 닫는 함수
+void closeSheet () {
   // for문 쓰는건 부하방지를 위해
   for (_servoAngle = ; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
     servo.write(_servoAngle);
 //    delay(40);
   }
 }
-// 뚜껑 여는 함수
-void openCover () {
+// 뚜껑 닫는 함수
+void closeCover () {
   // for문 쓰는건 부하방지를 위해
-  if (!_isCoverOpen) {
-    for (_servoAngle; i < 120 ; _servoAngle++) { // 뚜껑이 열린다
-      servo.write(_servoAngle);
-      delay(40);
-    }
+  for (_servo2Angle = ; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
+    servo.write(_servo2Angle);
+//    delay(40);
+  }
+}// 뚜껑 닫는 함수
+void closeCover () {
+  // for문 쓰는건 부하방지를 위해
+  for (_servo2Angle = ; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
+    servo.write(_servo2Angle);
+//    delay(40);
   }
 }
 void cleanCover () {
   // 아직 어떤식으로 움직여야할지, 어떤 부품을 쓰는지 파악이 안돼서 안짰다 ㅠ_ㅠ
 }
+// 시트 상태 만드는 함수
+// true: 열림
+// false: 닫힘
+void setIsSheetOpen (bool status) {
+  _isSheetOpen = status;
+
+  // 항상 상태를 보장하기 위해 커버의 동작은 이 함수 안에서 실행함
+  if (status) {
+    openSheet ();
+  }
+  else {
+     closeSheet ();
+  }
+}
+// 커버 상태 만드는 함수
+// true: 열림
+// false: 닫힘
 void setIsCoverOpen (bool status) {
   _isCoverOpen = status;
 
-  if (_isCoverOpen) {
-    
+  // 항상 상태를 보장하기 위해 커버의 동작은 이 함수 안에서 실행함
+  if (status) {
+    openCover ();
   }
   else {
-    
+     closeCover ();
   }
 }
+
+// 
