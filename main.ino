@@ -15,33 +15,41 @@ Servo servo;         // 뚜껑 서보
 
 */
 /* 영민님 변수 시작 */
-int SEAT = 2;         // 시트 압력스위치
-int SWUP = 3;         // 시트 올림
-int SWDN = 4;         // 시트 내림
-int sensor = 7;       // 센서 신호핀
-int lednormal = 8;    // 평소상태 표시 LED
-int ledready = 9;     // 뚜껑열린 상태 표시 LED 
-int leduv = 12;       // 사용후 적외선 소독기 LED
-int pirState = LOW;   // 센서 초기상태는 움직임이 없음을 가정
-int val = 0;          // 센서 신호의 판별을 위한 변수
-int sen;              // 시트 상태판별을 위한 변수:SEAT
-int sw_up;            // 시트 올림을 위한 변수:SWUP
-int sw_dn;            // 시트 내림을 위한 변수:SWDNServo servo;         // 뚜껑 서보
-Servo servo2;         // 시트 서보
-int SEAT = 2;         // 시트 압력스위치
-int SWUP = 3;         // 시트 올림
-int SWDN = 4;         // 시트 내림
-int sensor = 7;       // 센서 신호핀
-int lednormal = 8;    // 평소상태 표시 LED
-int ledready = 9;     // 뚜껑열린 상태 표시 LED 
-int leduv = 12;       // 사용후 적외선 소독기 LED
-int pirState = LOW;   // 센서 초기상태는 움직임이 없음을 가정
-int val = 0;          // 센서 신호의 판별을 위한 변수
-int sen;              // 시트 상태판별을 위한 변수:SEAT
-int sw_up;            // 시트 올림을 위한 변수:SWUP
-int sw_dn;            // 시트 내림을 위한 변수:SWDN
+//int SEAT = 2;         // 시트 압력스위치
+//int SWUP = 3;         // 시트 올림
+//int SWDN = 4;         // 시트 내림
+//int sensor = 7;       // 센서 신호핀
+//int lednormal = 8;    // 평소상태 표시 LED
+//int ledready = 9;     // 뚜껑열린 상태 표시 LED 
+//int leduv = 12;       // 사용후 적외선 소독기 LED
+//int pirState = LOW;   // 센서 초기상태는 움직임이 없음을 가정
+//int val = 0;          // 센서 신호의 판별을 위한 변수
+//int sen;              // 시트 상태판별을 위한 변수:SEAT
+//int sw_up;            // 시트 올림을 위한 변수:SWUP
+//int sw_dn;            // 시트 내림을 위한 변수:SWDNServo servo;         // 뚜껑 서보
+//Servo servo2;         // 시트 서보
+//int SEAT = 2;         // 시트 압력스위치
+//int SWUP = 3;         // 시트 올림
+//int SWDN = 4;         // 시트 내림
+//int sensor = 7;       // 센서 신호핀
+//int lednormal = 8;    // 평소상태 표시 LED
+//int ledready = 9;     // 뚜껑열린 상태 표시 LED 
+//int leduv = 12;       // 사용후 적외선 소독기 LED
+//int pirState = LOW;   // 센서 초기상태는 움직임이 없음을 가정
+//int val = 0;          // 센서 신호의 판별을 위한 변수
+//int sen;              // 시트 상태판별을 위한 변수:SEAT
+//int sw_up;            // 시트 올림을 위한 변수:SWUP
+//int sw_dn;            // 시트 내림을 위한 변수:SWDN
 /* 영민님 변수 끝 */
 
+// 회로 변수: 회로 시리얼 등
+int HC_SR501 = 1; // 적외선 센서
+
+// 초기화 변수: 부품의 초기 상태
+int PIR_STATE = LOW; // 
+int HC_SR501_VALUE = 0; // 
+
+// util 변수: 상태 제어에 필요한 변수들
 int _servoAngle = 0; // 서보모터 1 각도 (시트 모터)
 int _servo2Angle = 0; // 서보모터 2 각도 (뚜껑 모터)
 
@@ -57,34 +65,36 @@ void setup()
   pinMode(TCRT5000, INPUT); // 센서를 입력으로 설정
 
   // 영민님 초기화 부분
-  servo.attach(5);            // 뚜껑 서보모터 지정
-  servo2.attach(6);            // 시트 서보모터 지정
-  pinMode(lednormal, OUTPUT);  // 평소상태 LED를 출력으로 설정
-  pinMode(ledready, OUTPUT);   // 뚜껑열린상태 LED를 출력으로 설정
-  pinMode(leduv,OUTPUT);       // 적외선 소독 LED를 출력으로 설정
-  pinMode(sensor, INPUT);      // 인체감지 센서를 입력으로 설정
-  pinMode(SEAT,INPUT);         // 시트 압력 스위치를 입력으로 설정
-  pinMode(SWUP,INPUT);         // 시트 올림 스위치를 입력으로 설정
-  pinMode(SWDN,INPUT);         // 시트 내림 스위치를 입력으로 설정servo.attach(5);            // 뚜껑 서보모터 지정
-  servo2.attach(6);            // 시트 서보모터 지정
-  pinMode(lednormal, OUTPUT);  // 평소상태 LED를 출력으로 설정
-  pinMode(ledready, OUTPUT);   // 뚜껑열린상태 LED를 출력으로 설정
-  pinMode(leduv,OUTPUT);       // 적외선 소독 LED를 출력으로 설정
-  pinMode(sensor, INPUT);      // 인체감지 센서를 입력으로 설정
-  pinMode(SEAT,INPUT);         // 시트 압력 스위치를 입력으로 설정
-  pinMode(SWUP,INPUT);         // 시트 올림 스위치를 입력으로 설정
-  pinMode(SWDN,INPUT);         // 시트 내림 스위치를 입력으로 설정
+//  servo.attach(5);            // 뚜껑 서보모터 지정
+//  servo2.attach(6);            // 시트 서보모터 지정
+//  pinMode(lednormal, OUTPUT);  // 평소상태 LED를 출력으로 설정
+//  pinMode(ledready, OUTPUT);   // 뚜껑열린상태 LED를 출력으로 설정
+//  pinMode(leduv,OUTPUT);       // 적외선 소독 LED를 출력으로 설정
+//  pinMode(sensor, INPUT);      // 인체감지 센서를 입력으로 설정
+//  pinMode(SEAT,INPUT);         // 시트 압력 스위치를 입력으로 설정
+//  pinMode(SWUP,INPUT);         // 시트 올림 스위치를 입력으로 설정
+//  pinMode(SWDN,INPUT);         // 시트 내림 스위치를 입력으로 설정servo.attach(5);            // 뚜껑 서보모터 지정
+//  servo2.attach(6);            // 시트 서보모터 지정
+//  pinMode(lednormal, OUTPUT);  // 평소상태 LED를 출력으로 설정
+//  pinMode(ledready, OUTPUT);   // 뚜껑열린상태 LED를 출력으로 설정
+//  pinMode(leduv,OUTPUT);       // 적외선 소독 LED를 출력으로 설정
+//  pinMode(sensor, INPUT);      // 인체감지 센서를 입력으로 설정
+//  pinMode(SEAT,INPUT);         // 시트 압력 스위치를 입력으로 설정
+//  pinMode(SWUP,INPUT);         // 시트 올림 스위치를 입력으로 설정
+//  pinMode(SWDN,INPUT);         // 시트 내림 스위치를 입력으로 설정
   
+  // 회로 초기화
+  pinMode(HC_SR501, INPUT); // 적외선 센서 입력으로 설정
 }
 
 // 코드 최대한 읽기 쉽게 짜야함 ㅜ..
 void loop() 
 {
-  int TCRT5000value = analogRead(TCRT5000); // 센서를 읽어서 value에 저장
+  int PIRValue = readPIRSensor(); // 센서를 읽어서 value에 저장
 
   // 적외선 센서에 인체가 감지되었는가?
   // 인체가 계속 감지되는가?
-  if (TCRT5000value > 1000) { 
+  if (PIRValue == HIGH) { 
     // 뚜껑을 연다
     _personLeaveTime = 0;
     setIsCoverOpen (true); // 커버 열린 상태로 초기화
@@ -116,6 +126,14 @@ void loop()
   
   delay(100);
 }
+
+// 적외선 센서값 읽는 함수
+int readPIRSensor () {
+  int val = digitalRead(HC_SR501);
+
+  return val;
+}
+
 // switch1 읽는 함수
 bool readSwitch1 () {
   return true;
