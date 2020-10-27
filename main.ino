@@ -85,6 +85,9 @@ void setup()
   
   // 회로 초기화
   pinMode(HC_SR501, INPUT); // 적외선 센서 입력으로 설정
+
+  // for Debug
+  Serial.begin(9600);
 }
 
 // 코드 최대한 읽기 쉽게 짜야함 ㅜ..
@@ -95,6 +98,7 @@ void loop()
   // 적외선 센서에 인체가 감지되었는가?
   // 인체가 계속 감지되는가?
   if (PIRValue == HIGH) { 
+    Serial.println("Motion detected!");
     // 뚜껑을 연다
     _personLeaveTime = 0;
     setIsCoverOpen (true); // 커버 열린 상태로 초기화
@@ -110,12 +114,14 @@ void loop()
   }
   // 인체 비감지
   else { 
+    Serial.println("인체 비감지");
     _personLeaveTime ++;
     delay (1000);
   }
 
   if (_personLeaveTime > _personLeaveTimeInt) { // 5초의 지연을 준다.
     // 지연이 끝날 때까지 인체가 감지되지 않으면
+    Serial.println("인체 완전히 떠남");
     _personLeaveTime = 0;
 
     // 시트를 닫는다
@@ -146,7 +152,7 @@ bool readSwitch2 () {
 // 시트 여는 함수
 void openSheet () {
   // for문 쓰는건 부하방지를 위해
-  for (_servoAngle; i < 120 ; _servoAngle++) { // 뚜껑이 열린다
+  for (int i = _servoAngle; i < 120 ; _servoAngle++) { // 뚜껑이 열린다
     servo.write(_servoAngle);
     delay(40);
   }
@@ -154,22 +160,23 @@ void openSheet () {
 // 시트 닫는 함수
 void closeSheet () {
   // for문 쓰는건 부하방지를 위해
-  for (_servoAngle = ; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
+  for (int i = _servoAngle; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
     servo.write(_servoAngle);
 //    delay(40);
+  }
+}
+// 뚜껑 여는 함수
+void openCover () {
+  // for문 쓰는건 부하방지를 위해
+  for (int i = _servo2Angle; i < 120 ; _servoAngle++) { // 뚜껑이 열린다
+    servo.write(_servo2Angle);
+    delay(40);
   }
 }
 // 뚜껑 닫는 함수
 void closeCover () {
   // for문 쓰는건 부하방지를 위해
-  for (_servo2Angle = ; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
-    servo.write(_servo2Angle);
-//    delay(40);
-  }
-}// 뚜껑 닫는 함수
-void closeCover () {
-  // for문 쓰는건 부하방지를 위해
-  for (_servo2Angle = ; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
+  for (int i = _servo2Angle ; i >= 0 ; _servoAngle--) { // 뚜껑이 닫힌
     servo.write(_servo2Angle);
 //    delay(40);
   }
@@ -205,5 +212,3 @@ void setIsCoverOpen (bool status) {
      closeCover ();
   }
 }
-
-// 
